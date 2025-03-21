@@ -1,0 +1,78 @@
+import java.util.*;
+import java.util.stream.*;
+
+class Product {
+    private String name;
+    private String category;
+    private double price;
+
+    // Constructor
+    public Product(String name, String category, double price) {
+        this.name = name;
+        this.category = category;
+        this.price = price;
+    }
+
+    // Getters
+    public String getName() {
+        return name;
+    }
+
+    public String getCategory() {
+        return category;
+    }
+
+    public double getPrice() {
+        return price;
+    }
+
+    // Method to display product details
+    @Override
+    public String toString() {
+        return name + " (" + category + ") - $" + price;
+    }
+}
+
+public class ProductProcessing {
+
+    public static void main(String[] args) {
+        // Sample list of products
+        List<Product> products = Arrays.asList(
+            new Product("Laptop", "Electronics", 1200.00),
+            new Product("Smartphone", "Electronics", 800.00),
+            new Product("Tablet", "Electronics", 600.00),
+            new Product("Shirt", "Clothing", 30.00),
+            new Product("Jeans", "Clothing", 50.00),
+            new Product("Jacket", "Clothing", 100.00),
+            new Product("Coffee Maker", "Appliances", 150.00),
+            new Product("Blender", "Appliances", 80.00),
+            new Product("Microwave", "Appliances", 200.00)
+        );
+
+        // Group products by category
+        Map<String, List<Product>> productsByCategory = products.stream()
+                .collect(Collectors.groupingBy(Product::getCategory));
+
+        System.out.println("Products grouped by category:");
+        productsByCategory.forEach((category, productList) -> {
+            System.out.println(category + ": " + productList);
+        });
+
+        // Find the most expensive product in each category
+        System.out.println("\nMost expensive product in each category:");
+        productsByCategory.forEach((category, productList) -> {
+            Product mostExpensiveProduct = productList.stream()
+                    .max(Comparator.comparingDouble(Product::getPrice))
+                    .orElseThrow(() -> new NoSuchElementException("No product found"));
+            System.out.println(category + ": " + mostExpensiveProduct);
+        });
+
+        // Calculate the average price of all products
+        double averagePrice = products.stream()
+                .mapToDouble(Product::getPrice)  // Extract the price of each product
+                .average()                      // Calculate the average
+                .orElse(0.0);                   // Default value if the list is empty
+
+        System.out.println("\nAverage price of all products: $" + averagePrice);
+    }
+}
